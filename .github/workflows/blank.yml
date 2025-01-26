@@ -1,0 +1,64 @@
+name: Sync
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # This runs the workflow every 5 minutes
+permissions:
+  contents: write
+
+jobs:
+  update-static:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up Git
+      run: |
+        git config --global user.name "Ariya Git Purisa"
+        git config --global user.email "ariyagitpurisa@github"
+        git pull
+
+    - name: Read submodules.txt and process each submodule
+      run: |
+        while IFS= read -r line; do
+          if [[ -z "$line" || "$line" == \#* ]]; then
+            continue
+          fi
+          
+          repo_url=$(echo $line | awk '{print $1}')
+          branch=$(echo $line | awk '{print $2}')
+          folders=$(echo $line | cut -d' ' -f3-)
+
+          repo_name=$(basename $repo_url .git)
+          git clone --filter=blob:none --no-checkout $repo_url
+          cd $repo_name
+
+          git sparse-checkout init --cone
+          
+          # Set multiple folders at once
+          git sparse-checkout set "$folders"
+          git checkout $branch
+          
+          cd ..
+          
+          for folder in $folders; do
+            if [ -d "$repo_name/$folder" ]; then
+              target_dir="resources/$(basename $repo_name)/$folder"
+              mkdir -p "$target_dir"
+              cp -ru "$repo_name/$folder" "$(dirname $target_dir)"
+            fi
+          done
+
+          rm -rf $repo_name
+        done < submodules.txt
+
+    - name: Commit and push changes
+      run: |
+        git add .
+        commit_date=$(date "+%Y-%m-%d")
+        git commit -m "Sync - $commit_date " || echo "No changes to commit"
+        git push origin main
