@@ -1,4 +1,4 @@
-resources/tipitaka-xml/romn_txt
-resources/tipitaka.lk/public/static/books
-resources/tipitaka.lk/public/static/roman_json
-resources/tipitaka.lk/public/static/roman_txt
+tipitaka-xml/romn_txt
+tipitaka.lk/public/static/books
+tipitaka.lk/public/static/roman_json
+tipitaka.lk/public/static/roman_txt

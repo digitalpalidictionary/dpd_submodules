@@ -1,2 +1,2 @@
 bjt https://github.com/pathnirvana/tipitaka.lk master public/static/text
-tipitaka-xml https://github.com/vipassanatech/tipitaka-xml main romn
+cst https://github.com/vipassanatech/tipitaka-xml main romn
