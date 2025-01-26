@@ -62,6 +62,6 @@ jobs:
     - name: Commit and push changes
       run: |
         git add .
-        commit_date=$(date "+%Y-%m-%d")
+        commit_date=$(TZ='Asia/Colombo' date "+%Y-%m-%d %H:%M:%S")
         git commit -m "Sync - $commit_date " || echo "No changes to commit"
         git push origin main
